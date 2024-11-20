@@ -1,0 +1,39 @@
+# Ignore log files
+*.log
+
+# Ignore environment variables
+.env
+
+# Ignore build output
+dist/
+build/
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.iml
+
+# Ignore C/C++ specific files
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.lib
+*.so
+*.dll
+*.dSYM/
+*.dSYM.zip
+*.dSYM.tar.gz
+
+# Ignore C/C++ build directories
+bin/
+obj/

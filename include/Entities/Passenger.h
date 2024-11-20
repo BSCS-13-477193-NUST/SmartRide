@@ -1,10 +1,13 @@
-#include "Entities/Person.h"
+#ifndef PASSENGER_H
+#define PASSENGER_H
+
 #include <iostream>
+
+#include "Entities/Person.h"
 using namespace std;
 
-
-class Passenger: public Person {
-public:
+class Passenger : public Person {
+   public:
     Passenger();
     Passenger(string name, string email, string password);
     string getName();
@@ -14,3 +17,5 @@ public:
     void setEmail(string email);
     void setPassword(string password);
 };
+
+#endif  // PASSENGER_H

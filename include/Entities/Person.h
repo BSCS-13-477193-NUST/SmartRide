@@ -1,8 +1,11 @@
+#ifndef PERSON_H
+#define PERSON_H
+
 #include <iostream>
 using namespace std;
 
 class Person {
-public:
+   public:
     Person();
     Person(string ID, string name, char gender, string phone);
     virtual string getName() = 0;
@@ -15,3 +18,5 @@ public:
     void setID(string ID);
     void setGender(char gender);
 };
+
+#endif  // PERSON_H
