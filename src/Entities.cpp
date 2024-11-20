@@ -1,170 +1,86 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 using namespace std;
 
 class Person {
 public:
-    int age;
+    string ID;
     string name;
-    string email;
-    bool gender;
-    string phoneNumber;
-    string location;
+    char gender;
+    string phone;
 
-    Person(int age, string name, string email, bool gender, string phoneNumber, string location)
-        : age(age), name(name), email(email), gender(gender), phoneNumber(phoneNumber), location(location) {}
+    Person() : ID(""), name(""), gender('M'), phone("") {}
+    Person(string ID, string name, char gender, string phone) 
+        : ID(ID), name(name), gender(gender), phone(phone) {}
 
-    void setAge(int newAge) { age = newAge; }
-    void setName(string newName) { name = newName; }
-    void setGender(bool newGender) { gender = newGender; }
-    void setPhoneNumber(string newPhoneNumber) { phoneNumber = newPhoneNumber; }
-    void setLocation(string newLocation) { location = newLocation; }
+    virtual string getName() = 0;
+    virtual string getPhone() = 0;
+    virtual void setName(string name) = 0;
+    virtual void setPhone(string phone) = 0;
 
-    virtual void display() const {
-        cout << "Name: " << name << endl;
-        cout << "Age: " << age << endl;
-        cout << "Email: " << email << endl;
-        cout << "Gender: " << (gender ? "Male" : "Female") << endl;
-        cout << "Phone Number: " << phoneNumber << endl;
-        cout << "Location: " << location << endl;
-    }
-};
-
-class Passenger : public Person {
-public:
-    string rideStatus;
-
-    Passenger(int age, string name, string email, bool gender, string phoneNumber, string location)
-        : Person(age, name, email, gender, phoneNumber, location), rideStatus("None") {}
-
-    bool requestRide() {
-        if (rideStatus == "None") {
-            rideStatus = "Requested";
-            return true;
-        }
-        return false;
-    }
-
-    void setRideStatus(string newRideStatus) { rideStatus = newRideStatus; }
-
-    void display() const override {
-        Person::display();
-        cout << "Ride Status: " << rideStatus << endl;
-    }
+    string getID() { return ID; }
+    char getGender() { return gender; }
+    void setID(string ID) { this->ID = ID; }
+    void setGender(char gender) { this->gender = gender; }
 };
 
 class Driver : public Person {
+private:
+    string carModel;
+    string carPlate;
+
 public:
-    string licenseNumber;
-    int yearsOfExperience;
-    double averageRating;
-    int numberOfRidesCompleted;
-    vector<double> ratings;
-    bool availability;
+    Driver() : Person(), carModel("Unknown"), carPlate("Unknown") {}
 
-    Driver(int age, string name, string email, bool gender, string phoneNumber, string location, string licenseNumber, int yearsOfExperience)
-        : Person(age, name, email, gender, phoneNumber, location), licenseNumber(licenseNumber), yearsOfExperience(yearsOfExperience),
-          averageRating(0.0), numberOfRidesCompleted(0), availability(true) {}
+    Driver(string name, string email, string password, string carModel, string carPlate)
+        : Person(email, name, 'M', password), carModel(carModel), carPlate(carPlate) {}
 
-    void setLicenseNumber(string newLicenseNumber) { licenseNumber = newLicenseNumber; }
-    void setYearsOfExperience(int newYearsOfExperience) { yearsOfExperience = newYearsOfExperience; }
-    void setAvailability(bool newAvailability) { availability = newAvailability; }
+    string getCarModel() { return carModel; }
+    string getCarPlate() { return carPlate; }
+    void setCarModel(string carModel) { this->carModel = carModel; }
+    void setCarPlate(string carPlate) { this->carPlate = carPlate; }
 
-    void acceptRide(const Passenger& Passenger) {
-        if (availability && Passenger.rideStatus == "Requested") {
-            availability = false;
-            cout << "Driver " << name << " accepted the ride for " << Passenger.name << "." << endl;
-        } else {
-            cout << "Driver unavailable or invalid ride request!" << endl;
-        }
-    }
+    string getName() override { return name; }
+    string getPhone() override { return phone; }
+    void setName(string name) override { this->name = name; }
+    void setPhone(string phone) override { this->phone = phone; }
+};
 
-    void takeRating(double newRating) {
-        if (newRating < 0 || newRating > 5) {
-            cout << "Invalid rating! Ratings must be between 0 and 5." << endl;
-            return;
-        }
-        ratings.push_back(newRating);
-        numberOfRidesCompleted++;
-        averageRating = 0;
-        for (double rating : ratings) {
-            averageRating += rating;
-        }
-        averageRating /= ratings.size();
-    }
+class Passenger : public Person {
+private:
+    string email;
+    string password;
 
-    void display() const override {
-        Person::display();
-        cout << "License Number: " << licenseNumber << endl;
-        cout << "Years of Experience: " << yearsOfExperience << endl;
-        cout << "Number of Rides Completed: " << numberOfRidesCompleted << endl;
-        cout << "Average Rating: " << averageRating << endl;
-        cout << "Availability: " << (availability ? "Available" : "Unavailable") << endl;
-    }
+public:
+    Passenger() : Person(), email(""), password("") {}
+
+    Passenger(string name, string email, string password)
+        : Person("", name, 'M', ""), email(email), password(password) {}
+
+    string getName() override { return name; }
+    string getPhone() override { return phone; }
+    void setName(string name) override { this->name = name; }
+    void setPhone(string phone) override { this->phone = phone; }
+
+    void setEmail(string email) { this->email = email; }
+    void setPassword(string password) { this->password = password; }
 };
 
 int main() {
-    Driver driver1(35, "Ali Hussain", "ali@saraiki.com", true, "123-456-7890", "Sindh", "D123456", 10);
-    Driver driver2(29, "Zain Butt", "zainbutt@gmail.com", false, "987-654-1230", "Lor", "D654321", 5);
+    Driver driver1("Ali Hussain", "ali@saraiki.com", "password1", "Toyota Corolla", "ABC123");
+    Driver driver2("Zain Butt", "zainbutt@gmail.com", "password2", "Honda Civic", "XYZ456");
 
     cout << "Driver Details (Initial):" << endl;
-    driver1.display();
-    cout << endl;
-    driver2.display();
-    cout << "--------------------------" << endl;
+    cout << "Driver 1: " << driver1.getName() << ", " << driver1.getCarModel() << ", " << driver1.getCarPlate() << endl;
+    cout << "Driver 2: " << driver2.getName() << ", " << driver2.getCarModel() << ", " << driver2.getCarPlate() << endl;
 
-    cout << "\nAdding Ratings to Drivers:" << endl;
-    driver1.takeRating(4.5);
-    driver1.takeRating(5.0);
-    driver1.takeRating(4.8);
+    Passenger passenger1("Battay", "battay@yahoo.com", "pass1");
+    Passenger passenger2("Rakshas", "rakshas@prehistoricforums.com", "pass2");
 
-    driver2.takeRating(4.0);
-    driver2.takeRating(3.5);
-    driver2.takeRating(4.2);
-
-    cout << "\nUpdated Driver Details:" << endl;
-    driver1.display();
-    cout << endl;
-    driver2.display();
-    cout << "--------------------------" << endl;
-
-    Passenger Passenger1(25, "Battay", "battay@yahoo.com", false, "987-654-3210", "Pindi");
-    Passenger Passenger2(30, "Rakshas", "rakshas@prehistoricforums.com", true, "654-123-9870", "Ali ke sath");
-
-    cout << "Passenger Details (Initial):" << endl;
-    Passenger1.display();
-    cout << endl;
-    Passenger2.display();
-    cout << "--------------------------" << endl;
-
-    cout << "\nPassengers Requesting Rides:" << endl;
-    if (Passenger1.requestRide())
-        cout << Passenger1.name << " successfully requested a ride." << endl;
-    else
-        cout << Passenger1.name << " failed to request a ride." << endl;
-
-    if (Passenger2.requestRide())
-        cout << Passenger2.name << " successfully requested a ride." << endl;
-    else
-        cout << Passenger2.name << " failed to request a ride." << endl;
-
-    cout << "\nUpdated Passenger Details:" << endl;
-    Passenger1.display();
-    cout << endl;
-    Passenger2.display();
-    cout << "--------------------------" << endl;
-
-    cout << "\nDriver Accepting Ride:" << endl;
-    driver1.acceptRide(Passenger1);
-    driver2.acceptRide(Passenger2);
-
-    cout << "\nUpdated Driver Availability:" << endl;
-    driver1.display();
-    cout << endl;
-    driver2.display();
-    cout << "--------------------------" << endl;
+    cout << "\nPassenger Details (Initial):" << endl;
+    cout << "Passenger 1: " << passenger1.getName() << ", " << passenger1.getPhone() << endl;
+    cout << "Passenger 2: " << passenger2.getName() << ", " << passenger2.getPhone() << endl;
 
     return 0;
 }
