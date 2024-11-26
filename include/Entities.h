@@ -1,2 +1,9 @@
+#ifndef ENTITIES_H
+#define ENTITIES_H
+
 #include <iostream>
-using namespace std;
+
+#include "Entities/Person.h"
+#include "Entities/Ride.h"
+
+#endif  // ENTITIES_H

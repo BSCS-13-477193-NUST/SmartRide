@@ -53,4 +53,33 @@ We have implemented the following features for SmartRide:
 
 ---
 
+## Build Instructions
+
+To build the SmartRide project, follow these steps:
+
+1. **Clone the Repository**
+
+   ```sh
+   git clone https://github.com/BSCS-13-477193-NUST/SmartRide.git
+   cd SmartRide
+   ```
+
+2. **Install Dependencies**
+   Ensure you have a C++ compiler installed (e.g., `g++` for Linux/Mac or `MinGW` for Windows).
+
+3. **Compile the Code**
+
+   ```sh
+   cmake .
+   make
+   ```
+
+4. **Run the Application**
+
+   ```sh
+   ./SmartRide
+   ```
+
+---
+
 ## Project Structure

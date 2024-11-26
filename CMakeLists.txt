@@ -11,8 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include_directories(include)
 
 #add the sources
-set(SOURCES src/*.cpp src/*/*.cpp)
+file(GLOB_RECURSE SOURCES "src/*/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 
 # Add the executable
-add_executable(SmartRide main.cpp SOURCES)
+add_executable(SmartRide main.cpp ${SOURCES})
