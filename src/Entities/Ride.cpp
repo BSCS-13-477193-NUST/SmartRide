@@ -8,7 +8,7 @@
 Ride::Ride(int rideId, int userId, int driverId, const std::string& startLocation, const std::string& endLocation, std::time_t timestamp, double fare)
     : rideId(rideId), userId(userId), driverId(driverId), startLocation(startLocation), endLocation(endLocation), timestamp(timestamp), fare(fare) {}
 
-int Ride::getRideId() const { return rideId; }
+int Ride::getRideId() const { return userId; }
 int Ride::getUserId() const { return userId; }
 int Ride::getDriverId() const { return driverId; }
 std::string Ride::getStartLocation() const { return startLocation; }
