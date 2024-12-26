@@ -33,7 +33,7 @@ int main() {
     Ride ride5(105, 1005, "321 Pine St", "654 Birch St", rideTime, 18.75);
 
     // Create  ride queue
-    RideQueue rideQueue;
+    RideWaitingQueue rideQueue;
     rideQueue.addRide(ride1);
     rideQueue.addRide(ride2);
     rideQueue.addRide(ride3);
