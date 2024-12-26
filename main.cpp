@@ -25,9 +25,22 @@ int main() {
     personRepo.addDriver(driver2);
 
     // Create Rides
-    std::time_t now = std::time(0);
-    Ride ride1(1, user1->getId(), driver1->getId(), "123 Main St", "456 Elm St", now, 15.50);
-    Ride ride2(2, user2->getId(), driver2->getId(), "789 Oak St", "321 Pine St", now, 20.75);
+    std::time_t rideTime = std::time(nullptr);  // Current time for timestamp
+    Ride ride1(101, 1001, "123 Main St", "456 Elm St", rideTime, 25.50);
+    Ride ride2(102, 1002, "789 Oak St", "321 Pine St", rideTime, 30.75);
+    Ride ride3(103, 1003, "456 Elm St", "987 Maple St", rideTime, 15.25);
+    Ride ride4(104, 1004, "654 Birch St", "789 Oak St", rideTime, 20.50);
+    Ride ride5(105, 1005, "321 Pine St", "654 Birch St", rideTime, 18.75);
+
+    // Create  ride queue
+    RideQueue rideQueue;
+    rideQueue.addRide(ride1);
+    rideQueue.addRide(ride2);
+    rideQueue.addRide(ride3);
+    rideQueue.addRide(ride4);
+    rideQueue.addRide(ride5);
+
+
 
     // Add Rides to Users' and Drivers' ride histories
     user1->addRideToHistory(ride1);
