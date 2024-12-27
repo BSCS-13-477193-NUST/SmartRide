@@ -4,6 +4,14 @@
 #include <ctime>  // For timestamp handling
 #include <string>
 
+typedef enum Rating {
+    POOR = 1,
+    AVERAGE = 2,
+    GOOD = 3,
+    VERY_GOOD = 4,
+    EXCELLENT = 5
+} Rating;
+
 // Ride class
 class Ride {
    private:
@@ -14,6 +22,7 @@ class Ride {
     std::string endLocation;
     std::time_t timestamp;  // Stores the time of the ride
     double fare;
+    Rating driverRating;
 
    public:
     // Constructor
