@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Entities/Ride.h"  // Include RideHistory header
+#include "Entities/Ride.h"
 #include "Structures/Person.h"
 #include "Structures/Ride.h"
 
@@ -28,11 +28,16 @@ class Person {
     std::string getName() const;
     std::string getEmail() const;
     std::string getPhone() const;
+    std::string getPassword() const;
 
     // Setters
     void setName(const std::string& name);
     void setEmail(const std::string& email);
     void setPhone(const std::string& phone);
+    void setPassword(const std::string& password);
+
+    // Password verification
+    bool verifyPassword(const std::string& password) const;
 
     // Virtual methods
     virtual void displayInfo() const = 0;  // Pure virtual method for polymorphism

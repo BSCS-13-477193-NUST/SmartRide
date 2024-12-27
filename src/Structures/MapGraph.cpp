@@ -204,6 +204,7 @@ void MapGraph::loadSiteDistancesFromCSV(const std::string& filename) {
         }
     }
 }
+
 std::queue<int> MapGraph::shortestPath(int startSiteID, int endSiteID) {
     // Check if the site IDs are valid
     if (startSiteID < 0 || startSiteID >= this->getSitesNum() || endSiteID < 0 || endSiteID >= this->getSitesNum()) {
