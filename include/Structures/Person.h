@@ -28,6 +28,9 @@ class PersonRepository {
     // Retrieve a driver by ID
     Driver* getDriverById(int id) const;
 
+    void saveUsersToFile(const std::string& filename) const;
+    void loadUsersFromFile(const std::string& filename);
+
     // Destructor: Clean up dynamically allocated users and drivers
     ~PersonRepository();
 };

@@ -24,6 +24,10 @@ std::string Person::getPhone() const {
     return phone;
 }
 
+std::string Person::getPassword() const {
+    return password;
+}
+
 void Person::setName(const std::string& name) {
     this->name = name;
 }
@@ -34,6 +38,14 @@ void Person::setEmail(const std::string& email) {
 
 void Person::setPhone(const std::string& phone) {
     this->phone = phone;
+}
+
+void Person::setPassword(const std::string& password) {
+    this->password = password;
+}
+
+bool Person::verifyPassword(const std::string& password) const {
+    return this->password == password;
 }
 
 // User class implementation
