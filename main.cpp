@@ -15,7 +15,4 @@ int main() {
         int site = shortestPath.front();
         std::cout << site + 1 << std::endl;
         shortestPath.pop();
-    }
-
-    // Create a new user
 }

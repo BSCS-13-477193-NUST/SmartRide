@@ -38,4 +38,20 @@ class RideHistory {
     Ride* findRideById(int rideId);
 };
 
+class RideWaitingQueue {
+   private:
+    RideNode* head;
+    RideNode* tail;
+
+   public:
+    RideWaitingQueue();
+    ~RideWaitingQueue();
+
+    void addRide(const Ride& ride);
+    Ride* removeRide();
+    void printAllRides() const;
+    Ride* findRideById(int rideId);
+};
+
+
 #endif  // STRUCTURES_RIDE_H
