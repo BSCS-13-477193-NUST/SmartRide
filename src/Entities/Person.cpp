@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include "Entities/Person.h"
+#include "Misc.h"
+
 // Person class implementation
 Person::Person(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password)
     : id(id), name(name), email(email), phone(phone), password(password) {}
@@ -24,6 +27,10 @@ std::string Person::getPhone() const {
     return phone;
 }
 
+std::string Person::getPassword() const {
+    return password;
+}
+
 void Person::setName(const std::string& name) {
     this->name = name;
 }
@@ -36,29 +43,32 @@ void Person::setPhone(const std::string& phone) {
     this->phone = phone;
 }
 
-// User class implementation
-User::User(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password)
-    : Person(id, name, email, phone, password), rideHistory(id) {}
-
-void User::displayInfo() const {
-    std::cout << "User Info:\n";
-    std::cout << "ID: " << id << "\n";
-    std::cout << "Name: " << name << "\n";
-    std::cout << "Email: " << email << "\n";
-    std::cout << "Phone: " << phone << "\n";
+void Person::setPassword(const std::string& password) {
+    this->password = password;
 }
 
-// Add a ride to the user's ride history
-void User::addRideToHistory(const Ride& ride) {
-    rideHistory.addRide(ride);
+bool Person::verifyPassword(const std::string& password) const {
+    return this->password == password;
+}
+
+// User class implementation
+User::User(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, double x, double y)
+    : Person(id, name, email, phone, password), location(Coordinate(x, y)) {}
+
+void User::displayInfo() const {
+    std::cout << "User ID: " << getId() << std::endl;
+    std::cout << "Name: " << getName() << std::endl;
+    std::cout << "Email: " << getEmail() << std::endl;
+    std::cout << "Phone: " << getPhone() << std::endl;
+    std::cout << "Location: (" << location.getX() << ", " << location.getY() << ")" << std::endl;
 }
 
 // Driver class implementation
-Driver::Driver(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, const std::string& vehicleDetails)
-    : Person(id, name, email, phone, password), vehicleDetails(vehicleDetails), location({0.0, 0.0}), rating(0.0), isAvailable(true), rideHistory(id) {}
+Driver::Driver(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, const std::string& vehicleDetails, double x, double y)
+    : Person(id, name, email, phone, password), vehicleDetails(vehicleDetails), location(Coordinate(x, y)), isAvailable(true) {}
 
-void Driver::updateLocation(double latitude, double longitude) {
-    location = {latitude, longitude};
+void Driver::updateLocation(double x, double y) {
+    location = Coordinate(x, y);
 }
 
 void Driver::setAvailability(bool available) {
@@ -69,27 +79,16 @@ bool Driver::getAvailability() const {
     return isAvailable;
 }
 
-void Driver::updateRating(double newRating) {
-    // Simple average calculation for demonstration (extend as needed)
-    rating = (rating + newRating) / 2;
-}
-
-double Driver::getRating() const {
-    return rating;
+Coordinate Driver::getLocation() const {
+    return location;
 }
 
 void Driver::displayInfo() const {
-    std::cout << "Driver Info:\n";
-    std::cout << "ID: " << id << "\n";
-    std::cout << "Name: " << name << "\n";
-    std::cout << "Email: " << email << "\n";
-    std::cout << "Phone: " << phone << "\n";
-    std::cout << "Vehicle: " << vehicleDetails << "\n";
-    std::cout << "Rating: " << rating << "\n";
-    std::cout << "Availability: " << (isAvailable ? "Yes" : "No") << "\n";
-}
-
-// Add a ride to the driver's ride history
-void Driver::addRideToHistory(const Ride& ride) {
-    rideHistory.addRide(ride);
+    std::cout << "Driver ID: " << getId() << std::endl;
+    std::cout << "Name: " << getName() << std::endl;
+    std::cout << "Email: " << getEmail() << std::endl;
+    std::cout << "Phone: " << getPhone() << std::endl;
+    std::cout << "Vehicle Details: " << vehicleDetails << std::endl;
+    std::cout << "Location: (" << location.getX() << ", " << location.getY() << ")" << std::endl;
+    std::cout << "Availability: " << (isAvailable ? "Available" : "Not Available") << std::endl;
 }
