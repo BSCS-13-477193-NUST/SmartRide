@@ -7,7 +7,6 @@
 #include "Structures/Ride.h"
 
 // Ride class implementation
-
 Ride::Ride(int rideId, std::shared_ptr<Site> startLocation, std::time_t timestamp, double fare)
     : rideId(rideId), startLocation(startLocation), timestamp(timestamp), fare(fare) {}
 
