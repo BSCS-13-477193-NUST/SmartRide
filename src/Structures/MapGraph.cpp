@@ -1,20 +1,32 @@
-#include "Structures.h"
+#include "Structures/MapGraph.h"
+
 #include "csv.hpp"
 
-struct Node {
-    Site* site;
+typedef struct SiteNode {
+    std::shared_ptr<Site> site;
     int distance;
-    Node* parent;
+    std::shared_ptr<SiteNode> parent;
 
-    Node(Site* site, int distance, Node* parent) : site(site), distance(distance), parent(parent) {}
-    bool operator>(const Node& other) const {
+    SiteNode(std::shared_ptr<Site> site, int distance, std::shared_ptr<SiteNode> parent) : site(site), distance(distance), parent(parent) {}
+
+    bool operator>(const SiteNode& other) const {
         return distance > other.distance;
     }
 
-    bool operator==(const Node& other) const {
+    bool operator==(const SiteNode& other) const {
         return site->getId() == other.site->getId();
     }
-};
+} SiteNode;
+
+Coordinate::Coordinate(int x, int y) : x(x), y(y) {}
+
+int Coordinate::getX() const {
+    return x;
+}
+
+int Coordinate::getY() const {
+    return y;
+}
 
 Site::Site(int id, int x, int y, const std::string& name) : Coordinate(x, y), id(id), name(name) {}
 
@@ -26,18 +38,8 @@ std::string Site::getName() const {
     return name;
 }
 
-std::string Site::setName(const std::string& name) {
+void Site::setName(const std::string& name) {
     this->name = name;
-}
-
-Coordinate::Coordinate(int x, int y) : x(x), y(y) {}
-
-int Coordinate::getX() const {
-    return x;
-}
-
-int Coordinate::getY() const {
-    return y;
 }
 
 MapGraph::MapGraph() {
@@ -65,78 +67,45 @@ MapGraph::~MapGraph() {
     delete[] adjacencyMatrix;
 }
 
-void MapGraph::addroute(int startSiteID, int endSiteID, int distance) {
-    // Check if the site IDs are valid
-    if (startSiteID < 0 || startSiteID >= this->getSitesNum() || endSiteID < 0 || endSiteID >= this->getSitesNum()) {
-        std::cerr << "Invalid site IDs." << std::endl;
-        return;
-    }
-
-    // Add the route to the adjacency matrix
-    adjacencyMatrix[startSiteID][endSiteID] = distance;
-    adjacencyMatrix[endSiteID][startSiteID] = distance;
+void MapGraph::addroute(std::shared_ptr<Site> startSite, std::shared_ptr<Site> endSite, int distance) {
+    adjacencyMatrix[startSite->getId()][endSite->getId()] = distance;
+    adjacencyMatrix[endSite->getId()][startSite->getId()] = distance;
 }
 
-int MapGraph::getDistance(int startSiteID, int endSiteID) const {
-    // Check if the site IDs are valid
-    if (startSiteID < 0 || startSiteID >= this->getSitesNum() || endSiteID < 0 || endSiteID >= this->getSitesNum()) {
-        std::cerr << "Invalid site IDs." << std::endl;
-        return -1;
-    }
-
-    // Return the distance between the sites
-    return adjacencyMatrix[startSiteID][endSiteID];
+int MapGraph::getDistance(std::shared_ptr<Site> startSite, std::shared_ptr<Site> endSite) const {
+    return adjacencyMatrix[startSite->getId()][endSite->getId()];
 }
 
-int MapGraph::getHeuristic(Site& start, Site& end) {
-    return abs(start.getX() - end.getX()) + abs(start.getY() - end.getY());
+int MapGraph::getDistance(Coordinate a, Coordinate b) const {
+    return abs(a.getX() - b.getX()) + abs(a.getY() - b.getY());
 }
 
-int MapGraph::getSitesNum() const {
-    return this->sites.size();
-}
-
-Site& MapGraph::getSiteByID(int siteID) {
-    // Check if the site ID is valid
-    if (siteID < 0 || siteID >= this->getSitesNum()) {
-        std::cerr << "Invalid site ID." << std::endl;
-        throw std::invalid_argument("Invalid site ID.");
-    }
-
-    for (Site& site : sites) {
-        if (site.getId() == siteID) {
-            return site;
-        }
-    }
-}
-
-Site& MapGraph::getSiteByName(const std::string& siteName) {
-    for (Site& site : sites) {
-        if (site.getName() == siteName) {
-            return site;
-        }
-    }
-    throw std::out_of_range("Site not found.");
-}
-
-std::vector<int> MapGraph::getNeighborSites(int siteID) {
-    // Check if the site ID is valid
-    if (siteID < 0 || siteID >= this->getSitesNum()) {
-        std::cerr << "Invalid site ID." << std::endl;
-        return std::vector<int>();
-    }
-
+std::vector<std::shared_ptr<Site>> MapGraph::getNeighborSites(std::shared_ptr<Site> site) {
     // Allocate memory for the array of neighbors
-    std::vector<int> neighbors;
+    std::vector<std::shared_ptr<Site>> neighbors;
 
     // Fill the array with the IDs of the neighbors
     for (int i = 0; i < this->getSitesNum(); i++) {
-        if (adjacencyMatrix[siteID][i] != -1) {
-            neighbors.push_back(i);
+        if (adjacencyMatrix[site->getId()][i] != -1) {
+            neighbors.push_back(getSiteByID(i));
         }
     }
 
     return neighbors;
+}
+
+int MapGraph::getHeuristic(std::shared_ptr<Site> start, std::shared_ptr<Site> end) {
+    return abs(start->getX() - end->getX()) + abs(start->getY() - end->getY());
+}
+
+std::shared_ptr<Site> MapGraph::getSiteByID(int siteID) {
+    for (auto site : sites) {
+        if (site->getId() == siteID) {
+            return site;
+        }
+    }
+    std::cerr << "Error: Site " << siteID << " not found." << std::endl;
+    throw std::out_of_range("Site not found");
 }
 
 void MapGraph::loadSitesFromCSV(const std::string& filename) {
@@ -159,7 +128,7 @@ void MapGraph::loadSitesFromCSV(const std::string& filename) {
                 continue;
             }
 
-            Site site(sites.size(), x, y, siteName);
+            std::shared_ptr<Site> site = std::make_shared<Site>(sites.size(), x, y, siteName);
             sites.push_back(site);
         } catch (const std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -182,83 +151,70 @@ void MapGraph::loadSiteDistancesFromCSV(const std::string& filename) {
         std::string endSiteName = row["End"].get<std::string>();
         int distance = row["Distance"].get<int>();
 
-        try {
-            Site& startSite = this->getSiteByName(startSiteName);
-            Site& endSite = this->getSiteByName(endSiteName);
+        std::shared_ptr<Site> startSite = getSiteByName(startSiteName);
+        std::shared_ptr<Site> endSite = getSiteByName(endSiteName);
 
-            int startSiteID = startSite.getId();
-            int endSiteID = endSite.getId();
-
-            if (distance < 0) {
-                std::cerr << "Invalid distance value: " << distance << std::endl;
-                continue;
-            }
-
-            this->addroute(startSiteID, endSiteID, distance);
-        } catch (const std::invalid_argument& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-            continue;
-        } catch (const std::out_of_range& e) {
-            std::cerr << "Site not found: " << e.what() << std::endl;
-            continue;
-        }
+        this->addroute(startSite, endSite, distance);
     }
 }
-
-std::queue<int> MapGraph::shortestPath(int startSiteID, int endSiteID) {
-    // Check if the site IDs are valid
-    if (startSiteID < 0 || startSiteID >= this->getSitesNum() || endSiteID < 0 || endSiteID >= this->getSitesNum()) {
-        std::cerr << "Invalid site IDs." << std::endl;
-        return std::queue<int>();
-    }
-
-    // Initialize the queue for the shortest path
-    std::queue<int> shortestPathQueue;
-
+std::pair<std::stack<std::shared_ptr<Site>>, int> MapGraph::shortestPath(std::shared_ptr<Site> startSite, std::shared_ptr<Site> endSite) {
     // A* algorithm
-    std::priority_queue<Node*, std::vector<Node*>, std::greater<Node*>> toVisit;
-    std::vector<bool> visited(this->getSitesNum(), false);
+    struct Compare {
+        bool operator()(const std::shared_ptr<SiteNode>& lhs, const std::shared_ptr<SiteNode>& rhs) const {
+            return lhs->distance > rhs->distance;
+        }
+    };
+    std::priority_queue<std::shared_ptr<SiteNode>, std::vector<std::shared_ptr<SiteNode>>, Compare> toVisit;
+    std::set<std::shared_ptr<SiteNode>> visited;
 
-    toVisit.push(new Node(&this->getSiteByID(startSiteID), 0, nullptr));
+    toVisit.push(std::make_shared<SiteNode>(startSite, 0, nullptr));
 
     while (!toVisit.empty()) {
-        Node* current = toVisit.top();
+        std::shared_ptr<SiteNode> current = toVisit.top();
         toVisit.pop();
 
-        if (current->site->getId() == endSiteID) {
+        if (current->site == endSite) {
             // Reconstruct the path
-            std::queue<int> path;
-            Node* node = current;
+            // Initialize the queue for the shortest path
+            std::stack<std::shared_ptr<Site>> path;
+            int cost = 0;
+            std::shared_ptr<SiteNode> node = current;
             while (node->parent != nullptr) {
-                path.push(node->site->getId());
+                path.push(node->site);
+                cost += getDistance(node->site, node->parent->site);
                 node = node->parent;
             }
-            while (!toVisit.empty()) {
-                delete toVisit.top();
-                toVisit.pop();
-            }
-            return path;
+            return std::pair<std::stack<std::shared_ptr<Site>>, int>(path, cost);
         }
 
-        std::vector<int> neighbors = getNeighborSites(current->site->getId());
-        for (int neighborID : neighbors) {
-            Site& neighbor = getSiteByID(neighborID);
-            Node* neighborNode = new Node(&neighbor, current->distance + getDistance(current->site->getId(), neighborID) + getHeuristic(neighbor, getSiteByID(endSiteID)), current);
+        std::vector<std::shared_ptr<Site>> neighbors = getNeighborSites(current->site);
+        for (auto& neighbor : neighbors) {
+            std::shared_ptr<SiteNode> neighborSiteNode = std::make_shared<SiteNode>(neighbor, current->distance + getDistance(current->site, neighbor) + getHeuristic(neighbor, endSite), current);
 
-            if (visited[current->site->getId()]) {
+            if (visited.find(neighborSiteNode) != visited.end()) {
                 continue;
             }
 
-            toVisit.push(neighborNode);
+            toVisit.push(neighborSiteNode);
         }
 
-        visited[current->site->getId()] = true;
+        visited.insert(current);
     }
 
-    while (!toVisit.empty()) {
-        delete toVisit.top();
-        toVisit.pop();
+    return std::pair<std::stack<std::shared_ptr<Site>>, int>(std::stack<std::shared_ptr<Site>>(), -1);
+}
+
+std::shared_ptr<Site> MapGraph::getSiteByName(const std::string& siteName) {
+    for (auto site : sites) {
+        if (site->getName() == siteName) {
+            return site;
+        }
     }
 
-    return std::queue<int>();
+    std::cerr << "Error: Site " << siteName << " not found." << std::endl;
+    throw std::out_of_range("Site not found");
+}
+
+int MapGraph::getSitesNum() const {
+    return sites.size();
 }

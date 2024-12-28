@@ -8,11 +8,13 @@ int main() {
     MapGraph mapGraph;
 
     // Find the shortest path between two sites
-    std::queue<int> shortestPath = mapGraph.shortestPath(0, 6);
+    auto shortestPath = mapGraph.shortestPath(mapGraph.getSiteByID(15), mapGraph.getSiteByID(8));
 
     // Display the shortest path
-    while (!shortestPath.empty()) {
-        int site = shortestPath.front();
-        std::cout << site + 1 << std::endl;
-        shortestPath.pop();
+    while (!shortestPath.first.empty()) {
+        auto site = shortestPath.first.top();
+        std::cout << site->getName() << std::endl;
+        shortestPath.first.pop();
+    }
+    std::cout << "Total distance: " << shortestPath.second << std::endl;
 }

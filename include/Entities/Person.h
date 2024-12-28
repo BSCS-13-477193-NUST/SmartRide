@@ -4,6 +4,8 @@
 #include <string>
 
 #include "Entities/Ride.h"
+#include "Misc.h"
+#include "Structures/MapGraph.h"
 #include "Structures/Person.h"
 #include "Structures/Ride.h"
 
@@ -46,46 +48,34 @@ class Person {
 // Derived class User
 class User : public Person {
    private:
-    RideHistory rideHistory;  // User's ride history
-
+    Coordinate location;  // Current location (latitude, longitude)
    public:
     // Constructor
-    User(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password);
+    User(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, double x, double y);
 
     // Overriding displayInfo
     void displayInfo() const override;
-
-    // Add a ride to the user's history
-    void addRideToHistory(const Ride& ride);
 };
 
 // Derived class Driver
 class Driver : public Person {
    private:
-    std::string vehicleDetails;          // Information about the vehicle
-    std::pair<double, double> location;  // Current location (latitude, longitude)
-    double rating;                       // Average rating
-    bool isAvailable;                    // Availability status
-    RideHistory rideHistory;             // Driver's ride history
+    std::string vehicleDetails;  // Information about the vehicle
+    Coordinate location;         // Current location (latitude, longitude)
+    bool isAvailable;            // Availability status
 
    public:
     // Constructor
-    Driver(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, const std::string& vehicleDetails);
+    Driver(int id, const std::string& name, const std::string& email, const std::string& phone, const std::string& password, const std::string& vehicleDetails, double x, double y);
 
     // Location and availability operations
-    void updateLocation(double latitude, double longitude);
+    void updateLocation(double x, double y);
     void setAvailability(bool available);
     bool getAvailability() const;
-
-    // Rating operations
-    void updateRating(double newRating);
-    double getRating() const;
+    Coordinate getLocation() const;
 
     // Overriding displayInfo
     void displayInfo() const override;
-
-    // Add a ride to the driver's history
-    void addRideToHistory(const Ride& ride);
 };
 
 #endif  // PERSON_H
