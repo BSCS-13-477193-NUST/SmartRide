@@ -1,9 +1,12 @@
 #ifndef STRUCTURES_PERSON_H
 #define STRUCTURES_PERSON_H
 
+#include <memory>         // For shared_ptr
+#include <queue>          // For priority_queue
 #include <unordered_map>  // For unordered_map
 
 #include "Entities/Person.h"  // Include Person header
+#include "Structures/MapGraph.h"
 
 // Forward declarations
 class User;
@@ -26,6 +29,8 @@ class UserRepository {
 
     void saveUsersToFile(const std::string& filename) const;
     void loadUsersFromFile(const std::string& filename);
+    void appendUserToFile(const std::string& filename, std::shared_ptr<User> user) const;
+    std::shared_ptr<User> getUserByEmail(const std::string& email) const;
 
     // Destructor: Clean up dynamically allocated users and drivers
     ~UserRepository();
@@ -65,6 +70,12 @@ class DriverRepository {
     std::queue<std::shared_ptr<Driver>> getTopDrivers(int count) const;
     void addRating(const std::shared_ptr<Driver>, Rating rating);
     void printTopDrivers() const;
+    void rateDriver(std::shared_ptr<Driver> driver, int rating);
+
+    void saveDriversToFile(const std::string& filename) const;
+    void loadDriversFromFile(const std::string& filename);
+    void appendDriverToFile(const std::string& filename, std::shared_ptr<Driver> user) const;
+    std::shared_ptr<Driver> getDriverByEmail(const std::string& email) const;
 };
 
 #endif

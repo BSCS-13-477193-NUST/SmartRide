@@ -1,6 +1,18 @@
 #include "Structures/MapGraph.h"
 
+#include "Entities/Person.h"
+#include "Misc.h"
 #include "csv.hpp"
+
+Coordinate::Coordinate(int x, int y) : x(x), y(y) {}
+
+int Coordinate::getX() const {
+    return x;
+}
+
+int Coordinate::getY() const {
+    return y;
+}
 
 typedef struct SiteNode {
     std::shared_ptr<Site> site;
@@ -17,16 +29,6 @@ typedef struct SiteNode {
         return site->getId() == other.site->getId();
     }
 } SiteNode;
-
-Coordinate::Coordinate(int x, int y) : x(x), y(y) {}
-
-int Coordinate::getX() const {
-    return x;
-}
-
-int Coordinate::getY() const {
-    return y;
-}
 
 Site::Site(int id, int x, int y, const std::string& name) : Coordinate(x, y), id(id), name(name) {}
 
@@ -213,6 +215,65 @@ std::shared_ptr<Site> MapGraph::getSiteByName(const std::string& siteName) {
 
     std::cerr << "Error: Site " << siteName << " not found." << std::endl;
     throw std::out_of_range("Site not found");
+}
+
+std::shared_ptr<Site> MapGraph::getClosestSite(Coordinate location) {
+    std::shared_ptr<Site> closestSite = nullptr;
+    int minDistance = INT_MAX;
+
+    for (auto site : sites) {
+        int distance = getDistance(location, Coordinate(site->getX(), site->getY()));
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestSite = site;
+        }
+    }
+
+    return closestSite;
+}
+
+std::vector<std::shared_ptr<Site>> MapGraph::getSites() const {
+    return sites;
+}
+
+std::queue<std::pair<std::shared_ptr<User>, std::shared_ptr<Site>>> MapGraph::mergeStops(std::shared_ptr<Site> start, std::vector<std::pair<std::shared_ptr<User>, std::vector<std::shared_ptr<Site>>>> usersStops) {
+    using pair = std::pair<std::shared_ptr<User>, std::shared_ptr<Site>>;
+    std::queue<pair> mergedQueue;
+
+    if (usersStops.size() == 0 || usersStops.size() > 2) {
+        std::cerr << "Error: Invalid number of users." << std::endl;
+        return mergedQueue;
+    }
+    std::pair<std::shared_ptr<User>, std::vector<std::shared_ptr<Site>>> first = usersStops[0];
+    std::pair<std::shared_ptr<User>, std::vector<std::shared_ptr<Site>>> second;
+    if (usersStops.size() == 2) {
+        second = usersStops[1];
+    }
+
+    while (!first.second.empty() || !second.second.empty()) {
+        auto firstSite = first.second.empty() ? nullptr : first.second.front();
+        auto secondSite = second.second.empty() ? nullptr : second.second.front();
+
+        if (firstSite && secondSite) {
+            int firstDistance = getDistance(start, firstSite);
+            int secondDistance = getDistance(start, secondSite);
+            if (firstDistance < secondDistance) {
+                mergedQueue.push({first.first, firstSite});
+                first.second.erase(first.second.begin());
+            } else {
+                mergedQueue.push({second.first, secondSite});
+                second.second.erase(second.second.begin());
+            }
+        } else if (firstSite) {
+            mergedQueue.push({first.first, firstSite});
+            first.second.erase(first.second.begin());
+        } else if (secondSite) {
+            mergedQueue.push({second.first, secondSite});
+            second.second.erase(second.second.begin());
+        }
+    }
+
+    return mergedQueue;
 }
 
 int MapGraph::getSitesNum() const {
