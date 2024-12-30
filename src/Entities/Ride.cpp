@@ -7,8 +7,8 @@
 #include "Structures/Ride.h"
 
 // Ride class implementation
-Ride::Ride(int rideId, std::shared_ptr<Site> startLocation, std::time_t timestamp, double fare)
-    : rideId(rideId), startLocation(startLocation), timestamp(timestamp), fare(fare) {}
+Ride::Ride(int rideId, std::shared_ptr<Site> startLocation, int timestamp)
+    : rideId(rideId), startLocation(startLocation), timestamp(timestamp) {}
 
 int Ride::getRideId() const {
     return rideId;
@@ -22,21 +22,16 @@ std::shared_ptr<Site> Ride::getStartLocation() const {
     return startLocation;
 }
 
-std::shared_ptr<Site> Ride::getEndLocation(int userId) const {
-    for (const auto& userEndLocation : userEndLocationID) {
-        if (userEndLocation.first->getId() == userId) {
-            return userEndLocation.second;
-        }
-    }
-    return nullptr;
-}
-
 std::time_t Ride::getTimestamp() const {
     return timestamp;
 }
 
-double Ride::getFare() const {
-    return fare;
+double Ride::getFare(std::shared_ptr<User> user) const {
+    return userFare.at(user->getId());
+}
+
+void Ride::setFare(std::shared_ptr<User> user, double fare) {
+    userFare[user->getId()] = fare;
 }
 
 void Ride::setDriver(const std::shared_ptr<Driver> driver) {
@@ -44,16 +39,41 @@ void Ride::setDriver(const std::shared_ptr<Driver> driver) {
 }
 
 void Ride::addStop(std::shared_ptr<User> user, const std::shared_ptr<Site> endLocation) {
-    userEndLocationID.push_back(std::make_pair(user, endLocation));
-}
-
-void Ride::removeStop(std::shared_ptr<User> user, const std::shared_ptr<Site> endLocation) {
-    for (auto it = userEndLocationID.rbegin(); it != userEndLocationID.rend(); ++it) {
-        if (it->first == user && it->second == endLocation) {
-            userEndLocationID.erase(std::next(it).base());
+    for (auto& userStops : usersStops) {
+        if (userStops.first == user) {
+            userStops.second.push_back(endLocation);
             return;
         }
     }
+}
+
+void Ride::removeStop(std::shared_ptr<User> user, const std::shared_ptr<Site> endLocation) {
+    for (auto& userStops : usersStops) {
+        if (userStops.first == user) {
+            userStops.second.erase(std::remove(userStops.second.begin(), userStops.second.end(), endLocation), userStops.second.end());
+            return;
+        }
+    }
+}
+
+void Ride::addUsersStops(std::vector<UserStops> usersStops) {
+    this->usersStops = usersStops;
+}
+
+void Ride::removeUsersStops() {
+    usersStops.clear();
+}
+
+std::vector<Ride::UserStops> Ride::getUsersStops() const {
+    return usersStops;
+}
+
+void Ride::addFinalStop(std::shared_ptr<User> user, std::shared_ptr<Site> site) {
+    finalStops.push_back({user, site});
+}
+
+std::vector<std::pair<std::shared_ptr<User>, std::shared_ptr<Site>>> Ride::getFinalStops() const {
+    return finalStops;
 }
 
 bool Ride::IsAssigned() {
@@ -61,17 +81,21 @@ bool Ride::IsAssigned() {
 }
 
 void Ride::displayInfo() const {
-    std::cout << "Ride ID: " << rideId << std::endl;
-    std::cout << "Start Location: " << startLocation->getName() << std::endl;
-    std::cout << "Timestamp: " << std::asctime(std::localtime(&timestamp));
-    std::cout << "Fare: " << fare << std::endl;
-    if (driver) {
-        std::cout << "Driver: " << driver->getName() << std::endl;
-    } else {
-        std::cout << "Driver: Not assigned" << std::endl;
+    std::cout << "=== 🚗 Ride Information ===" << std::endl;
+    std::cout << "🆔 Ride ID: " << rideId << std::endl;
+    std::cout << "👨‍✈️ Driver: " << (driver ? driver->getName() : "Unassigned") << std::endl;
+    std::cout << "📍 Start Location: " << startLocation->getName() << std::endl;
+    std::cout << "⏰ Timestamp: " << std::asctime(std::localtime(&timestamp));
+    std::cout << "=== 👥 Users and Stops ===" << std::endl;
+    for (const auto& userStops : usersStops) {
+        std::cout << "👤 User: " << userStops.first->getName() << std::endl;
+        for (const auto& stop : userStops.second) {
+            std::cout << "🛑 Stop: " << stop->getName() << std::endl;
+        }
     }
-    std::cout << "Passengers:" << std::endl;
-    for (const auto& userEndLocation : userEndLocationID) {
-        std::cout << " - " << userEndLocation.first->getName() << " to " << userEndLocation.second->getName() << std::endl;
+    std::cout << "=== 💵 Fares ===" << std::endl;
+    for (const auto& fare : userFare) {
+        std::cout << "👤 User ID: " << fare.first << ", 💵 Fare: " << fare.second << std::endl;
     }
+    std::cout << "==========================" << std::endl;
 }

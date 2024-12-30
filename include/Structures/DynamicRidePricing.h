@@ -3,17 +3,19 @@
 
 #include <iostream>
 #include <memory>
+
 #include "Structures/AVLprices.h"
 
 class DynamicRidePricing {
-public:
+   public:
     DynamicRidePricing();
     ~DynamicRidePricing();
     double calculatePrice(int time, int traffic, int demand, double distance);
 
-private:
+   private:
     std::unique_ptr<AVLTree> priceTree;
     double calculateBasePrice(double distance) const;
+    double adjustedPrice(double basePrice, int time, int traffic, int demand);
 };
 
-#endif // DYNAMIC_RIDE_PRICING_H
+#endif  // DYNAMIC_RIDE_PRICING_H

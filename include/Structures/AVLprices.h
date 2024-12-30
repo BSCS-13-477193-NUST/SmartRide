@@ -18,7 +18,7 @@ struct AVLNode {
 };
 
 class AVLTree {
-public:
+   public:
     AVLTree();
     ~AVLTree();
     void insert(RidePricingData data);
@@ -26,7 +26,7 @@ public:
     AVLNode* search(int time, int traffic, int demand) const;
     void printInOrder() const;
 
-private:
+   private:
     AVLNode* root;
     AVLNode* insert(AVLNode* node, RidePricingData data);
     AVLNode* remove(AVLNode* node, RidePricingData data);
@@ -40,4 +40,4 @@ private:
     int compare(const RidePricingData& a, const RidePricingData& b) const;
 };
 
-#endif // AVL_TREE_H
+#endif  // AVL_TREE_H

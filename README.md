@@ -1,3 +1,8 @@
+# IMPORTANT
+
+- put data folder from root to build folder.
+- build the project using cmake for windows.
+
 # SmartRide - A Ride-Hailing Service
 
 SmartRide is a simulated ride-hailing service that demonstrates various features of such a platform while leveraging efficient data structures and algorithms. This project is designed as part of a Data Structures and Algorithms (DSA) course, focusing on the implementation of data structures from scratch in C++.
@@ -83,3 +88,41 @@ To build the SmartRide project, follow these steps:
 ---
 
 ## Project Structure
+
+```
+SmartRide/
+├── include/
+│   ├── Entities/
+│   │   └── Ride.h
+│   └── Structures/
+│       └── Ride.h
+├── src/
+│   ├── Entities/
+│   │   └── Person.cpp
+│   ├── Structures/
+│   │   ├── DynamicRidePricing.cpp
+│   │   └── Ride.cpp
+│   └── SmartRide.cpp
+├── data/
+│   ├── users.csv
+│   └── drivers.csv
+└── README.md
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## Acknowledgements
+
+- Thanks to all contributors and open-source projects that made this application possible.

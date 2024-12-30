@@ -1,19 +1,12 @@
 #ifndef MAP_GRAPH_H
 #define MAP_GRAPH_H
+#include <Entities/Person.h>
+
 #include <queue>
 #include <stack>
 #include <string>
 
-class Coordinate {
-   private:
-    int x;
-    int y;
-
-   public:
-    Coordinate(int x, int y);
-    int getX() const;
-    int getY() const;
-};
+#include "Misc.h"
 
 class Site : public Coordinate {
    private:
@@ -54,6 +47,9 @@ class MapGraph {
     std::shared_ptr<Site> getSiteByID(int siteID);
 
     std::shared_ptr<Site> getSiteByName(const std::string& siteName);
+    std::shared_ptr<Site> getClosestSite(Coordinate location);
+    std::vector<std::shared_ptr<Site>> getSites() const;
+    std::queue<std::pair<std::shared_ptr<User>, std::shared_ptr<Site>>> mergeStops(std::shared_ptr<Site> start, std::vector<std::pair<std::shared_ptr<User>, std::vector<std::shared_ptr<Site>>>> usersStops);
 
     // Get the number of sites
     int getSitesNum() const;

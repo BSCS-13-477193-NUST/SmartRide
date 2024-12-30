@@ -1,4 +1,5 @@
-#include "AVLprices.h"
+#include "Structures/AVLprices.h"
+
 #include <iostream>
 
 AVLTree::AVLTree() : root(nullptr) {}
@@ -52,9 +53,12 @@ int AVLTree::compare(const RidePricingData& a, const RidePricingData& b) const {
 AVLNode* AVLTree::insert(AVLNode* node, RidePricingData data) {
     if (!node) return new AVLNode(data);
     int cmp = compare(data, node->data);
-    if (cmp < 0) node->left = insert(node->left, data);
-    else if (cmp > 0) node->right = insert(node->right, data);
-    else return node;
+    if (cmp < 0)
+        node->left = insert(node->left, data);
+    else if (cmp > 0)
+        node->right = insert(node->right, data);
+    else
+        return node;
 
     node->height = 1 + std::max(getHeight(node->left), getHeight(node->right));
     int balance = getBalance(node);
@@ -85,15 +89,18 @@ AVLNode* AVLTree::minValueNode(AVLNode* node) const {
 AVLNode* AVLTree::remove(AVLNode* node, RidePricingData data) {
     if (!node) return node;
     int cmp = compare(data, node->data);
-    if (cmp < 0) node->left = remove(node->left, data);
-    else if (cmp > 0) node->right = remove(node->right, data);
+    if (cmp < 0)
+        node->left = remove(node->left, data);
+    else if (cmp > 0)
+        node->right = remove(node->right, data);
     else {
         if (!node->left || !node->right) {
             AVLNode* temp = node->left ? node->left : node->right;
             if (!temp) {
                 temp = node;
                 node = nullptr;
-            } else *node = *temp;
+            } else
+                *node = *temp;
             delete temp;
         } else {
             AVLNode* temp = minValueNode(node->right);
@@ -128,9 +135,12 @@ AVLNode* AVLTree::search(int time, int traffic, int demand) const {
     RidePricingData target(time, traffic, demand, 0.0);
     while (current) {
         int cmp = compare(target, current->data);
-        if (cmp == 0) return current;
-        else if (cmp < 0) current = current->left;
-        else current = current->right;
+        if (cmp == 0)
+            return current;
+        else if (cmp < 0)
+            current = current->left;
+        else
+            current = current->right;
     }
     return nullptr;
 }
